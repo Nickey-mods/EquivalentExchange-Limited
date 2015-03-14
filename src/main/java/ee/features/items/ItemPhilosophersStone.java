@@ -11,12 +11,20 @@ public class ItemPhilosophersStone extends ItemEEFunctional {
     {
         super(NameRegistry.Philo);
     }
-	public ItemStack onItemRightClick(ItemStack var1, World var2, EntityPlayer var3)
+	public ItemStack onItemRightClick(ItemStack var1, World var2, EntityPlayer p)
     {
-		if(!var3.isSneaking())
+		if(!p.isSneaking())
 		{
+			p.openGui(EELimited.instance,EELimited.CRAFT,p.worldObj,(int)p.posX, (int)p.posY, (int)p.posZ);
 			return var1;
 		}
 		return new ItemStack(EELimited.PhilTool);
     }
+	public void showWorkbench(EntityPlayer p)
+	{
+		if(!p.worldObj.isRemote)
+		{
+			
+		}
+	}
 }

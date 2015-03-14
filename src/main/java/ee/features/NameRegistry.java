@@ -23,4 +23,6 @@ public interface NameRegistry
     String NuggetIron = "NuggetIron";
     String PhilTool = "PhilTool";
     String Repair = "Repair";
+    String Bag = "AlchBag";
+    String AlchChest = "AlchChest";
 }

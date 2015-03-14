@@ -49,14 +49,19 @@ import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
+import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
+import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
+import ee.features.blocks.BlockAlchChest;
 import ee.features.blocks.BlockEE;
 import ee.features.blocks.BlockEETorch;
+import ee.features.items.ItemAlchemyBag;
 import ee.features.items.ItemCovalenceDust;
 import ee.features.items.ItemDMAxe;
 import ee.features.items.ItemDMHoe;
@@ -75,6 +80,10 @@ import ee.features.items.ItemPhilosophersStone;
 import ee.features.items.ItemRepairCharm;
 import ee.features.items.ItemSwiftwolfsRing;
 import ee.features.items.ItemVolcanite;
+import ee.gui.GuiHandler;
+import ee.gui.TileEntityAlchChest;
+import ee.network.PacketHandler;
+import ee.network.PacketKeyInput;
 import gregtech.api.GregTech_API;
 import gregtech.api.items.GT_MetaGenerated_Tool;
 import gregtech.api.objects.GT_ItemStack;
@@ -83,6 +92,7 @@ import gregtech.api.util.GT_Utility;
 @Mod(modid = "EELimited",name = "EELimited",version = "rev.a1")
 public class EELimited {
 
+	@Mod.Instance("EELimited")
 	public static EELimited instance;
     public static CreativeTabs TabEE = new CreativeTabEE();
 
@@ -93,6 +103,17 @@ public class EELimited {
     public Logger log = LogManager.getLogger("EELimited");
     public Logger logFinder = LogManager.getLogger("EEItemFinder");
 
+    /**
+     * Proxies
+     */
+    @SidedProxy(clientSide="ee.features.ClientProxy",serverSide="ee.features.CommonProxy")
+    public static CommonProxy proxy;
+    /**
+     * Gui IDs
+     */
+    public static final int ALCH_BAG_ID = 0;
+    public static final int CRAFT = 1;
+    public static final int ALCH_CHEST = 2;
     /**
      * Options
      */
@@ -125,6 +146,7 @@ public class EELimited {
     public static Item NIron;
     public static Item PhilTool;
     public static Item Repair;
+    public static Item AlchBag;
     /**
      * Blocks
      */
@@ -138,7 +160,10 @@ public class EELimited {
     @EventHandler
     public void init(FMLInitializationEvent e)
     {
+    	FMLCommonHandler.instance().bus().register(this);
     	NetworkRegistry.INSTANCE.registerGuiHandler(this,new GuiHandler());
+    	KeyRegistry.registerKies();
+    	PacketHandler.register();
     	instance = this;
     	EEProxy.Init(FMLClientHandler.instance().getClient(),this);
     	loadConfig();
@@ -164,7 +189,9 @@ public class EELimited {
     	ironband = new ItemEE(NameRegistry.IronBand);
     	PhilTool = new ItemPhilToolBase();
     	Repair = new ItemRepairCharm();
-    	//AlchChest = new BlockAlchChest();
+    	AlchBag = new ItemAlchemyBag();
+    	AlchChest = new BlockAlchChest();
+    	GameRegistry.registerTileEntity(TileEntityAlchChest.class,"alchchest");
     	if(Hard)
     	{
     		removeRecipes();
@@ -188,7 +215,13 @@ public class EELimited {
         addRecipe(gs(DMSword), "D", "D", "X", 'D', DM, 'X', Items.diamond);
         addRecipe(gs(DMHoe), "DD ", " X ", " X ", 'D', DM, 'X', Items.diamond);
         addRecipe(gs(DMHoe), " DD", " X ", " X ", 'D', DM, 'X', Items.diamond);
+        addRecipe(gs(AlchChest),"LMH","SDS","ICI",'L',getCov(LOW),'M',getCov(MIDDLE),'H',getCov(HIGH),'S',Blocks.stone,'D',Items.diamond,'I',Items.iron_ingot,'C',Blocks.chest);
+        addRecipe(gs(AlchChest),"HML","SDS","ICI",'L',getCov(LOW),'M',getCov(MIDDLE),'H',getCov(HIGH),'S',Blocks.stone,'D',Items.diamond,'I',Items.iron_ingot,'C',Blocks.chest);
         addSRecipe(gs(Items.potionitem,1,0),Ever,Items.glass_bottle);
+        for(int i = 0;i < 16;i++)
+        {
+        	addRecipe(gs(AlchBag,1,i),"HHH","WCW","WWW",'H',getCov(HIGH),'C',AlchChest,'W',gs(Blocks.wool,1,i));
+        }
     	addRelicRecipe();
     	addAlchemicalRecipe();
     	addCovalenceRecipe();
@@ -242,6 +275,20 @@ public class EELimited {
     	if(Loader.isModLoaded("gregtech"))
     	{
     		GTAddon();
+    	}
+    }
+    /*
+     * Event handler
+     */
+    @SubscribeEvent
+    public void onKeyInput(KeyInputEvent event)
+    {
+    	for(int i = 0;i < KeyRegistry.array.length;i++)
+    	{
+    		if(KeyRegistry.array[i].isPressed())
+    		{
+    			PacketHandler.sendToServer(new PacketKeyInput(i));
+    		}
     	}
     }
     /*

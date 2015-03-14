@@ -18,6 +18,7 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 public class EEHandler {
 
 	public static boolean hasStarted = false;
+	public static boolean flag = false;
 	@SubscribeEvent
 	public void livingUpdate(LivingUpdateEvent e)
 	{
@@ -54,10 +55,26 @@ public class EEHandler {
 				if(is.getItem() == EELimited.Swift && is.getItemDamage() > 0)
 				{
 					allowFly = true;
+					flag = true;
 				}
 				if(is.getItem() == EELimited.DD && is.getItemDamage() > 0)
 				{
 					disableDamage = true;
+				}
+			}
+			if(flag && !allowFly)
+			{
+				if(p.onGround || p.isInWater())
+				{
+					flag = false;
+				}
+				else
+				{
+					if(p.motionY >= 0)
+					{
+						p.motionY = -0.2;
+					}
+					p.motionY -= 0.213123;
 				}
 			}
 			pc.allowFlying = allowFly;

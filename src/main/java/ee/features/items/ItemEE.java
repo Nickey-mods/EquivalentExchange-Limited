@@ -57,7 +57,7 @@ public class ItemEE extends Item {
 
     public void onActivated(ItemStack is)
     {
-        if (is.getItem() instanceof ItemRing||(!is.getHasSubtypes() && is.getMaxDamage() > 0))
+        if (is.getItem() instanceof ItemRing||(!is.getHasSubtypes() && is.getMaxDamage() == 200))
         {
             is.setItemDamage(1 - is.getItemDamage());
         }
