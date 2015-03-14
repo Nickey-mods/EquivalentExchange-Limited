@@ -89,7 +89,7 @@ import gregtech.api.items.GT_MetaGenerated_Tool;
 import gregtech.api.objects.GT_ItemStack;
 import gregtech.api.util.GT_Utility;
 
-@Mod(modid = "EELimited",name = "EELimited",version = "rev.a1")
+@Mod(modid = "EELimited",name = "EELimited",version = "RC1")
 public class EELimited {
 
 	@Mod.Instance("EELimited")
