@@ -16,6 +16,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -55,12 +56,17 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
+import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
+import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameData;
 import cpw.mods.fml.common.registry.GameRegistry;
 import ee.features.blocks.BlockAlchChest;
 import ee.features.blocks.BlockEE;
 import ee.features.blocks.BlockEETorch;
+import ee.features.entity.EntityLavaProjectile;
+import ee.features.entity.EntityMobRandomizer;
+import ee.features.entity.EntityWaterProjectile;
 import ee.features.items.ItemAlchemyBag;
 import ee.features.items.ItemCovalenceDust;
 import ee.features.items.ItemDMAxe;
@@ -72,6 +78,7 @@ import ee.features.items.ItemDMSword;
 import ee.features.items.ItemDamageDisabler;
 import ee.features.items.ItemEE;
 import ee.features.items.ItemEvertide;
+import ee.features.items.ItemKleinStar;
 import ee.features.items.ItemPhilToolBase;
 import ee.features.items.ItemPhilToolFMP;
 import ee.features.items.ItemPhilToolGT;
@@ -80,6 +87,12 @@ import ee.features.items.ItemPhilosophersStone;
 import ee.features.items.ItemRepairCharm;
 import ee.features.items.ItemSwiftwolfsRing;
 import ee.features.items.ItemVolcanite;
+import ee.features.items.entity.ItemLavaOrb;
+import ee.features.items.entity.ItemMobRandomizer;
+import ee.features.items.entity.ItemWaterOrb;
+import ee.features.recipes.FixRecipe;
+import ee.features.recipes.KleinChargeRecipe;
+import ee.features.recipes.KleinUpgradeRecipe;
 import ee.gui.GuiHandler;
 import ee.gui.TileEntityAlchChest;
 import ee.network.PacketHandler;
@@ -115,6 +128,10 @@ public class EELimited {
     public static final int CRAFT = 1;
     public static final int ALCH_CHEST = 2;
     /**
+     * Entity IDs
+     */
+    public static int nextID = 0;
+    /**
      * Options
      */
     public static boolean cutDown;
@@ -123,6 +140,17 @@ public class EELimited {
     public static boolean noBats;
     public static boolean noTeleport;
     public static boolean dontCarry;
+    public static boolean cantPutAlchemyBag;
+    public static boolean disableResource;
+    /**
+     * Klein star damages
+     */
+    public static final int EIN = 0;
+    public static final int ZWEI = 1;
+    public static final int DREI = 2;
+    public static final int VIER = 3;
+    public static final int SPHERE = 4;
+    public static final int OMEGA = 5;
     /**
      * Items
      */
@@ -147,6 +175,13 @@ public class EELimited {
     public static Item PhilTool;
     public static Item Repair;
     public static Item AlchBag;
+    public static Item Klein;
+    /**
+     * Projectiles
+     */
+    public static Item LavaOrb;
+    public static Item WaterOrb;
+    public static Item Randomizer;
     /**
      * Blocks
      */
@@ -164,7 +199,6 @@ public class EELimited {
     	NetworkRegistry.INSTANCE.registerGuiHandler(this,new GuiHandler());
     	KeyRegistry.registerKies();
     	PacketHandler.register();
-    	instance = this;
     	EEProxy.Init(FMLClientHandler.instance().getClient(),this);
     	loadConfig();
     	Blocks.command_block.setCreativeTab(CreativeTabs.tabRedstone);
@@ -191,6 +225,22 @@ public class EELimited {
     	Repair = new ItemRepairCharm();
     	AlchBag = new ItemAlchemyBag();
     	AlchChest = new BlockAlchChest();
+    	Klein = new ItemKleinStar();
+    	LavaOrb = new ItemLavaOrb();
+    	WaterOrb = new ItemWaterOrb();
+    	Randomizer = new ItemMobRandomizer();
+    	/*
+    	 *	register objects
+    	 */
+    	{
+    		/**
+    		 * Register entities
+    		 */
+    		registerEntity(EntityLavaProjectile.class,"lava_orb");
+    		registerEntity(EntityWaterProjectile.class,"water_orb");
+    		registerEntity(EntityMobRandomizer.class,"randomizer");
+    	}
+    	proxy.registerRenderers();
     	GameRegistry.registerTileEntity(TileEntityAlchChest.class,"alchchest");
     	if(Hard)
     	{
@@ -204,7 +254,7 @@ public class EELimited {
         addSRecipe(gs(Phil),gs(Phil),gs(Items.slime_ball),gs(Items.glowstone_dust),gs(Items.redstone));
         addSRecipe(gs(Items.glowstone_dust, 4), gs(Items.coal), gs(Items.redstone));
         addSRecipe(gs(Items.redstone, 4), gs(Items.coal), gs(Blocks.cobblestone));
-        addSRecipe(gs(DM, 4), gs(DMBlock));
+        addSRecipe(gs(DM), gs(DMBlock));
         addRecipe(gs(DMBlock), "DD", "DD", 'D', DM);
         ItemStack is = new ItemStack(DMPickaxe);
         is.addEnchantment(Enchantment.fortune,10);
@@ -222,7 +272,10 @@ public class EELimited {
         {
         	addRecipe(gs(AlchBag,1,i),"HHH","WCW","WWW",'H',getCov(HIGH),'C',AlchChest,'W',gs(Blocks.wool,1,i));
         }
-    	addRelicRecipe();
+        addORecipe(gs(Klein),"CCC","CDC","CCC",'C',mobiusFuel,'D',"gemDiamond");
+    	addKleinUpgradeRecipe();
+    	addKleinChargeRecipe();
+        addRelicRecipe();
     	addAlchemicalRecipe();
     	addCovalenceRecipe();
     	addFixRecipe();
@@ -230,6 +283,54 @@ public class EELimited {
     	registerFuel();
     	registerHarvestLevel();
     	registerAchievements();
+    }
+    public void addKleinChargeRecipe()
+    {
+    	addKleinChargeRecipe(gs(Blocks.cobblestone),1);
+    	addKleinChargeRecipe(gs(Items.coal),4);
+    	addKleinChargeRecipe(gs(Items.redstone),4);
+    	addKleinChargeRecipe(gs(Blocks.redstone_block),36);
+    	addKleinChargeRecipe(gs(Items.glowstone_dust),16);
+    	addKleinChargeRecipe(gs(Blocks.glowstone),64);
+    	addKleinChargeRecipe(gs(Items.gunpowder),64);
+    	addKleinChargeRecipe(gs(Items.diamond),512);
+    	addKleinChargeRecipe(gs(Blocks.diamond_block),4608);
+    	addKleinChargeRecipe(gs(DMBlock),14976);
+    	addKleinChargeRecipe(gs(DM),14976);
+    }
+    public void addKleinChargeRecipe(ItemStack fuel,int EMC)
+    {
+    	for(int i = 0;i < 6;i++)
+    	{
+    		for(int j = 1;j <= 8;j++)
+    		{
+    			List<ItemStack> list = new ArrayList<ItemStack>();
+    			list.add(gs(Klein,1,i));
+    			for(int k = 0;k < j;k++)
+    			{
+    				list.add(fuel);
+    			}
+    			addRecipe(new KleinChargeRecipe(gs(Klein,1,i),list,EMC*j));
+    		}
+    	}
+    }
+    public void addKleinUpgradeRecipe()
+    {
+    	addKleinUpgradeRecipe(EIN,ZWEI);
+    	addKleinUpgradeRecipe(ZWEI,DREI);
+    	addKleinUpgradeRecipe(DREI,VIER);
+    	addKleinUpgradeRecipe(VIER,SPHERE);
+    	addKleinUpgradeRecipe(SPHERE,OMEGA);
+    }
+    public void addKleinUpgradeRecipe(int src,int dest)
+    {
+    	List<ItemStack> list = Arrays.asList(new ItemStack[]{gs(Klein,1,src),gs(Klein,1,src),gs(Klein,1,src),gs(Klein,1,src)});
+    	addRecipe(new KleinUpgradeRecipe(gs(Klein,1,dest),list));
+    }
+    public void registerEntity(Class<? extends Entity> clas,String name)
+    {
+    	EntityRegistry.registerModEntity(clas, name, nextID, this,500,1,false);
+    	nextID++;
     }
     @EventHandler
     public void preInit(FMLPreInitializationEvent e)
@@ -280,6 +381,14 @@ public class EELimited {
     /*
      * Event handler
      */
+    @SubscribeEvent
+    public void onServerTick(TickEvent.ServerTickEvent event)
+    {
+    	if(event.phase == TickEvent.Phase.END)
+    	{
+    		PlayerTimers.update();
+    	}
+    }
     @SubscribeEvent
     public void onKeyInput(KeyInputEvent event)
     {
@@ -334,8 +443,9 @@ public class EELimited {
     public void registerHarvestLevel()
     {
     	DMPickaxe.setHarvestLevel("pickaxe",10);
-    	DMShovel.setHarvestLevel("shovel",4);
-    	DMBlock.setHarvestLevel("pickaxe",5);
+    	DMShovel.setHarvestLevel("shovel",10);
+    	DMBlock.setHarvestLevel("pickaxe",10);
+    	AlchChest.setHarvestLevel("pickaxe",2);
     }
     public void loadConfig()
     {
@@ -347,6 +457,8 @@ public class EELimited {
     	noBats= config.getBoolean("noBats",config.CATEGORY_GENERAL,false,"No more bats!");
     	noTeleport= config.getBoolean("noTeleport",config.CATEGORY_GENERAL,false,"now Enderman can't teleport!");
     	dontCarry= config.getBoolean("noCarry",config.CATEGORY_GENERAL,false,"now Enderman can't carry blocks!");
+    	cantPutAlchemyBag = config.getBoolean("can'tPutAlchemyBags",config.CATEGORY_GENERAL,true,"if true,player will be not able to put Alchemy Bag into themselves");
+    	disableResource = config.getBoolean("disableResource",config.CATEGORY_GENERAL,false,"disable this mod's resource system(Unlimited magics!)");
     	config.save();
     }
     public void registerAchievements()

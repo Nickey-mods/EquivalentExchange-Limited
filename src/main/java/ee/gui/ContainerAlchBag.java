@@ -6,6 +6,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import ee.features.EELimited;
 import ee.features.items.ItemAlchemyBag;
 
 public class ContainerAlchBag extends Container
@@ -20,7 +21,7 @@ public class ContainerAlchBag extends Container
 		{
 			for (int j = 0; j < 13; j++)
 			{
-				this.addSlotToContainer(new Slot(inv, j + i * 13, 12 + j * 18, 5 + i * 18));
+				this.addSlotToContainer(new SlotAlchemyBag(inv, j + i * 13, 12 + j * 18, 5 + i * 18));
 			}
 		}
 		//Player Inventory
@@ -55,7 +56,7 @@ public class ContainerAlchBag extends Container
 					 return null;
 				 }
 			 }
-			 else if(itemstack1.getItem() instanceof ItemAlchemyBag)
+			 else if(EELimited.cantPutAlchemyBag && itemstack1.getItem() instanceof ItemAlchemyBag)
 			 {
 				 return null;
 			 }

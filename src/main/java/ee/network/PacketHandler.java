@@ -15,6 +15,7 @@ public class PacketHandler
 	{
 		HANDLER.registerMessage(PacketKeyInput.class,PacketKeyInput.class,0,Side.SERVER);
 		HANDLER.registerMessage(PacketOrientationSync.class,PacketOrientationSync.class,1,Side.CLIENT);
+		HANDLER.registerMessage(PacketSpawnParticle.class,PacketSpawnParticle.class,2,Side.CLIENT);
 	}
 	/**
 	 * Sends a packet to the server.<br>

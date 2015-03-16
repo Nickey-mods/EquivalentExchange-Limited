@@ -2,10 +2,15 @@ package ee.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
-import ee.features.EELimited;
+import ee.features.items.IChargeable;
+import ee.features.items.IExtraFunction;
+import ee.features.items.IProjectileShooter;
+import ee.features.items.ItemEE;
 
 public class PacketKeyInput implements IMessage, IMessageHandler<PacketKeyInput,IMessage> {
 
@@ -28,11 +33,41 @@ public class PacketKeyInput implements IMessage, IMessageHandler<PacketKeyInput,
 	@Override
 	public IMessage onMessage(PacketKeyInput message, MessageContext ctx) {
 		EntityPlayerMP player = ctx.getServerHandler().playerEntity;
+		ItemStack is = player.getCurrentEquippedItem();
+		World w = player.worldObj;
 		if(message.code == 0)
 		{
-			if(player.inventory.hasItem(EELimited.Phil))
+			if(is != null && is.getItem() instanceof ItemEE)
 			{
-				player.openGui(EELimited.instance,EELimited.CRAFT,player.worldObj,(int)player.posX, (int)player.posY, (int)player.posZ);
+				((ItemEE)is.getItem()).onActivated(is);
+			}
+		}
+		if(message.code == 1)
+		{
+			boolean isSneaking = player.isSneaking();
+			IChargeable item;
+			if(is != null && is.getItem() instanceof IChargeable)
+			{
+				item = (IChargeable)is.getItem();
+			}
+			else
+			{
+				return null;
+			}
+			item.changeCharge(player, is);
+		}
+		if(message.code == 2)
+		{
+			if(is != null && is.getItem() instanceof IProjectileShooter)
+			{
+				((IProjectileShooter)is.getItem()).shootProcectile(player, is);
+			}
+		}
+		if(message.code == 3)
+		{
+			if(is != null && is.getItem() instanceof IExtraFunction)
+			{
+				((IExtraFunction)is.getItem()).onExtraFunction(player, is);
 			}
 		}
 		return null;

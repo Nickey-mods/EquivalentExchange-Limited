@@ -102,8 +102,9 @@ public class InventoryAlchBag implements IInventory
 	}
 
 	@Override
-	public boolean isItemValidForSlot(int index, ItemStack content) {
-		return true;
+	public boolean isItemValidForSlot(int index, ItemStack content)
+	{
+		return false;//return EELimited.cantPutAlchemyBag ? !(content.getItem() instanceof ItemAlchemyBag) : true;
 	}
 
 }

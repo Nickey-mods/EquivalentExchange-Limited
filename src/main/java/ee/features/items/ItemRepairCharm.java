@@ -4,10 +4,11 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import ee.features.EELimited;
+import ee.features.EEProxy;
 import ee.features.NameRegistry;
-import ee.features.Timer1s;
+import ee.features.PlayerTimers;
 
 public class ItemRepairCharm extends ItemEEFunctional
 {
@@ -17,18 +18,47 @@ public class ItemRepairCharm extends ItemEEFunctional
 	@Override
 	public void onUpdate(ItemStack stack, World world, Entity entity, int par4, boolean par5)
 	{
-		if(!world.isRemote&&entity instanceof EntityPlayer&&Timer1s.isTime())
+		if (!stack.hasTagCompound())
 		{
-			EntityPlayer p = (EntityPlayer)entity;
-			IInventory inv = p.inventory;
-			for(int i = 0;i < inv.getSizeInventory();i++)
+			stack.stackTagCompound = new NBTTagCompound();
+		}
+
+		if (world.isRemote || !(entity instanceof EntityPlayer))
+		{
+			return;
+		}
+
+		EntityPlayer player = (EntityPlayer) entity;
+
+		PlayerTimers.activateRepair(player);
+
+		if (PlayerTimers.canRepair(player))
+		{
+			repairAllItems(player);
+		}
+	}
+
+	public void repairAllItems(EntityPlayer player)
+	{
+		IInventory inv = player.inventory;
+
+		for (int i = 0; i < 40; i++)
+		{
+			ItemStack invStack = inv.getStackInSlot(i);
+
+			if (invStack == null || invStack.getItem() instanceof ItemEE || !invStack.getItem().isRepairable())
 			{
-				ItemStack is = inv.getStackInSlot(i);
-				if(is != null&&EELimited.isRepairable(is.getItem())&&is.getItemDamage() > 0)
-				{
-					is.setItemDamage(is.getItemDamage() - 1);
-				}
-				inv.setInventorySlotContents(i, is);
+				continue;
+			}
+
+			if (invStack.equals(player.getCurrentEquippedItem()) && player.isSwingInProgress) {
+				//Don't repair item that is currently used by the player.
+				continue;
+			}
+
+			if (!invStack.getHasSubtypes() && invStack.getMaxDamage() != 0 && invStack.getItemDamage() > 0 && EEProxy.UseResource(player,1))
+			{
+				invStack.setItemDamage(invStack.getItemDamage() - 1);
 			}
 		}
 	}

@@ -25,4 +25,8 @@ public interface NameRegistry
     String Repair = "Repair";
     String Bag = "AlchBag";
     String AlchChest = "AlchChest";
+    String Klein = "Klein";
+    String LavaOrb = "lava_orb";
+    String WaterOrb = "water_orb";
+    String Randomizer = "randomizer";
 }

@@ -1,5 +1,6 @@
 package ee.features;
 
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityEnderman;
@@ -30,7 +31,6 @@ public class EEHandler {
 		EntityLivingBase l = e.entityLiving;
 		if(l instanceof EntityPlayer)
 		{
-			Timer1s.Tick();
 			EntityPlayer p = (EntityPlayer)l;
 			PlayerCapabilities pc = p.capabilities;
 			/*{
@@ -79,6 +79,11 @@ public class EEHandler {
 			}
 			pc.allowFlying = allowFly;
 			pc.disableDamage = disableDamage;
+			EEProxy.setEntityImmuneToFire(p, p.inventory.hasItem(EELimited.Volc));
+			if(p.inventory.hasItem(EELimited.Volc)&&p.worldObj.getBlock((int)p.posX,(int)p.posY,(int)p.posZ).getMaterial() == Material.lava&&p.capabilities.getWalkSpeed() != 0.1F)
+			{
+				EEProxy.setPlayerSpeed(p, 0.1F);
+			}
 		}
 		if(EELimited.noBats&&l instanceof EntityBat)
 		{
