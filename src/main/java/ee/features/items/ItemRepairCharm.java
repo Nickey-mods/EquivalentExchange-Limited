@@ -59,6 +59,19 @@ public class ItemRepairCharm extends ItemEEFunctional
 			if (!invStack.getHasSubtypes() && invStack.getMaxDamage() != 0 && invStack.getItemDamage() > 0 && EEProxy.UseResource(player,1))
 			{
 				invStack.setItemDamage(invStack.getItemDamage() - 1);
+				inv.markDirty();
+				continue;
+			}
+			if (invStack.hasTagCompound())
+			{
+				NBTTagCompound tag = invStack.getTagCompound();
+				if(invStack.getTagCompound().hasKey("Damage"))
+				{
+					int current = tag.getInteger("Damage");
+					tag.setInteger("Damage",Math.max(current - 1,0));
+					inv.markDirty();
+					continue;
+				}
 			}
 		}
 	}

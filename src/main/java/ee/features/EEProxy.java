@@ -139,7 +139,11 @@ public class EEProxy
     }
     public static boolean UseResource(EntityPlayer player,int amount)
     {
-    	if(EELimited.disableResource)
+    	if(EELimited.disableResource||player == null)
+    	{
+    		return true;
+    	}
+    	if(player.capabilities.isCreativeMode)
     	{
     		return true;
     	}

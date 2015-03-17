@@ -56,16 +56,28 @@ public final class PlayerTimers
 
 	public static void activateRepair(EntityPlayer player)
 	{
+		if(!MAP.containsKey(player.getCommandSenderName()))
+		{
+			registerPlayer(player);
+		}
 		MAP.get(player.getCommandSenderName()).repair.shouldUpdate = true;
 	}
 
 	public static void activateHeal(EntityPlayer player)
 	{
+		if(!MAP.containsKey(player.getCommandSenderName()))
+		{
+			registerPlayer(player);
+		}
 		MAP.get(player.getCommandSenderName()).heal.shouldUpdate = true;
 	}
 
 	public static void activateFeed(EntityPlayer player)
 	{
+		if(!MAP.containsKey(player.getCommandSenderName()))
+		{
+			registerPlayer(player);
+		}
 		MAP.get(player.getCommandSenderName()).feed.shouldUpdate = true;
 	}
 

@@ -2,8 +2,6 @@ package ee.features;
 
 import static ee.features.Level.*;
 import ic2.api.item.IC2Items;
-import ic2.api.recipe.RecipeInputItemStack;
-import ic2.api.recipe.Recipes;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -56,7 +54,6 @@ import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
-import cpw.mods.fml.common.gameevent.TickEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameData;
@@ -196,6 +193,7 @@ public class EELimited {
     public void init(FMLInitializationEvent e)
     {
     	FMLCommonHandler.instance().bus().register(this);
+    	FMLCommonHandler.instance().bus().register(new TickEvents());
     	NetworkRegistry.INSTANCE.registerGuiHandler(this,new GuiHandler());
     	KeyRegistry.registerKies();
     	PacketHandler.register();
@@ -363,7 +361,7 @@ public class EELimited {
     	FMLCommonHandler.instance().bus().register(new CraftingHandler());
     	if(Loader.isModLoaded("IC2"))
     	{
-    		IC2Addon();
+    		IC2Addon.addIC2Recipe(this);
     	}
     	if(Loader.isModLoaded("Tubestuff"))
     	{
@@ -381,14 +379,6 @@ public class EELimited {
     /*
      * Event handler
      */
-    @SubscribeEvent
-    public void onServerTick(TickEvent.ServerTickEvent event)
-    {
-    	if(event.phase == TickEvent.Phase.END)
-    	{
-    		PlayerTimers.update();
-    	}
-    }
     @SubscribeEvent
     public void onKeyInput(KeyInputEvent event)
     {
@@ -519,52 +509,6 @@ public class EELimited {
     public void CallGTMethod(String method)
     {
     }
-    public void IC2Addon()
-	{
-		addFixRecipe(LOW, IC2Items.getItem("treetap").getItem(), 5);
-	    addFixRecipe(LOW, IC2Items.getItem("hazmatHelmet").getItem(), 4);
-	    addFixRecipe(LOW, IC2Items.getItem("hazmatChestplate").getItem(), 6);
-	    addFixRecipe(LOW, IC2Items.getItem("hazmatLeggings").getItem(), 6);
-	    addFixRecipe(LOW, IC2Items.getItem("hazmatBoots").getItem(), 6);
-	    addFixRecipe(MIDDLE, IC2Items.getItem("bronzeHelmet").getItem(), 5);
-	    addFixRecipe(MIDDLE, IC2Items.getItem("bronzeChestplate").getItem(), 8);
-	    addFixRecipe(MIDDLE, IC2Items.getItem("bronzeLeggings").getItem(), 7);
-	    addFixRecipe(MIDDLE, IC2Items.getItem("bronzeBoots").getItem(), 4);
-	    addFixRecipe(MIDDLE, IC2Items.getItem("wrench").getItem(), 6);
-	    addFixRecipe(MIDDLE, IC2Items.getItem("bronzePickaxe"), 3);
-	    addFixRecipe(MIDDLE, IC2Items.getItem("bronzeAxe"), 3);
-	    addFixRecipe(MIDDLE, IC2Items.getItem("bronzeSword"), 2);
-	    addFixRecipe(MIDDLE, IC2Items.getItem("bronzeShovel"), 1);
-	    addFixRecipe(MIDDLE, IC2Items.getItem("bronzeHoe"), 2);
-	    addRecipe(new ShapelessOreRecipe(getIC2("platecopper"),gs(PhilTool),"ingotCopper"));
-	    addRecipe(new ShapelessOreRecipe(getIC2("platetin"),gs(PhilTool),"ingotTin"));
-	    addRecipe(new ShapelessOreRecipe(getIC2("plategold"),gs(PhilTool),gs(Items.gold_ingot)));
-	    addRecipe(new ShapelessOreRecipe(getIC2("plateiron"),gs(PhilTool),gs(Items.iron_ingot)));
-	    addRecipe(new ShapelessOreRecipe(getIC2("platebronze"),gs(PhilTool),"ingotBronze"));
-	    addRecipe(new ShapelessOreRecipe(getIC2("platelead"),gs(PhilTool),"ingotLead"));
-	    addSRecipe(changeAmount(getIC2("ironCableItem"),4),gs(PhilTool),getIC2("plateiron"));
-	    addSRecipe(changeAmount(getIC2("copperCableItem"),4),gs(PhilTool),getIC2("platecopper"));
-	    addSRecipe(changeAmount(getIC2("goldCableItem"),4),gs(PhilTool),getIC2("plategold"));
-	    addSRecipe(changeAmount(getIC2("tinCableItem"),4),gs(PhilTool),getIC2("platetin"));
-	    ItemStack dp = IC2Items.getItem("diamondDust");
-	    Recipes.macerator.addRecipe(new RecipeInputItemStack(gs(Blocks.diamond_ore)), null, changeAmount(dp, 2));
-	    GameRegistry.addSmelting(dp, gs(Items.diamond), 10);
-	    /*{
-	    	IMachineRecipeManager mac = Recipes.macerator;
-	    	List<ItemStack> list = getPhils(3);
-	    	Map<IRecipeInput,RecipeOutput> recipe = mac.getRecipes();
-	    	Set<Entry<IRecipeInput,RecipeOutput>> es = recipe.entrySet();
-	    	Entry<IRecipeInput,RecipeOutput> e = (Entry<IRecipeInput,RecipeOutput>)es.toArray()[0];
-	    	IRecipeInput in = e.getKey();
-	    	RecipeOutput op = e.getValue();
-	    	ItemStack input = in.getInputs().get(0);
-	    	for(int i = 0;i < in.getAmount();i++)
-	    	{
-	    		list.add(input);
-	    	}
-	    	addSRecipe(op.items.get(0),list.toArray());
-	    }*/
-	}
     public void addSawRecipe(ItemStack is,Object obj,int count)
     {
     	if(obj instanceof ItemStack)
