@@ -32,6 +32,15 @@ item.PhilTool_wrench.name=Philosopher's stone(Wrench)
 item.PhilTool_saw.name=Philosopher's stone(Saw)
 item.Repair.name=Talisman of Repair
 item.AlchBag.name=Alchemy Bag
+item.BHRing.name=Black Hole Band
+
+#Klein Star names
+item.Klein_0.name=Klein Star Ein
+item.Klein_1.name=Klein Star Zwei
+item.Klein_2.name=Klein Star Drei
+item.Klein_3.name=Klein Star Vier
+item.Klein_4.name=Klein Star Sphere
+item.Klein_5.name=Klein Star Omega
 
 #Block names
 tile.DMBlock.name=Darkmatter Block

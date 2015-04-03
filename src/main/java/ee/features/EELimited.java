@@ -44,6 +44,7 @@ import org.apache.logging.log4j.Logger;
 
 import tconstruct.library.tools.ToolCore;
 import cpw.mods.fml.client.FMLClientHandler;
+import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.Loader;
 import cpw.mods.fml.common.Mod;
@@ -52,8 +53,6 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import cpw.mods.fml.common.eventhandler.SubscribeEvent;
-import cpw.mods.fml.common.gameevent.InputEvent.KeyInputEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameData;
@@ -65,6 +64,7 @@ import ee.features.entity.EntityLavaProjectile;
 import ee.features.entity.EntityMobRandomizer;
 import ee.features.entity.EntityWaterProjectile;
 import ee.features.items.ItemAlchemyBag;
+import ee.features.items.ItemBlackHoleRing;
 import ee.features.items.ItemCovalenceDust;
 import ee.features.items.ItemDMAxe;
 import ee.features.items.ItemDMHoe;
@@ -90,10 +90,9 @@ import ee.features.items.entity.ItemWaterOrb;
 import ee.features.recipes.FixRecipe;
 import ee.features.recipes.KleinChargeRecipe;
 import ee.features.recipes.KleinUpgradeRecipe;
+import ee.features.tile.TileEntityAlchChest;
 import ee.gui.GuiHandler;
-import ee.gui.TileEntityAlchChest;
 import ee.network.PacketHandler;
-import ee.network.PacketKeyInput;
 import gregtech.api.GregTech_API;
 import gregtech.api.items.GT_MetaGenerated_Tool;
 import gregtech.api.objects.GT_ItemStack;
@@ -124,6 +123,10 @@ public class EELimited {
     public static final int ALCH_BAG_ID = 0;
     public static final int CRAFT = 1;
     public static final int ALCH_CHEST = 2;
+    /**
+     * Render IDs
+     */
+    public static final int RENDER_CHEST = RenderingRegistry.getNextAvailableRenderId();
     /**
      * Entity IDs
      */
@@ -173,6 +176,7 @@ public class EELimited {
     public static Item Repair;
     public static Item AlchBag;
     public static Item Klein;
+    public static Item BHR;
     /**
      * Projectiles
      */
@@ -192,12 +196,15 @@ public class EELimited {
     @EventHandler
     public void init(FMLInitializationEvent e)
     {
-    	FMLCommonHandler.instance().bus().register(this);
     	FMLCommonHandler.instance().bus().register(new TickEvents());
     	NetworkRegistry.INSTANCE.registerGuiHandler(this,new GuiHandler());
-    	KeyRegistry.registerKies();
     	PacketHandler.register();
-    	EEProxy.Init(FMLClientHandler.instance().getClient(),this);
+    	proxy.registerKies();
+    	proxy.registerClientOnlyEvents();
+    	if(FMLCommonHandler.instance().getSide().isClient())
+    	{
+    		EEProxy.Init(FMLClientHandler.instance().getClient(),this);
+    	}
     	loadConfig();
     	Blocks.command_block.setCreativeTab(CreativeTabs.tabRedstone);
     	RecipeSorter.register("eelimited.fixrecipe",FixRecipe.class,Category.SHAPELESS,"after:minecraft:shapeless");
@@ -227,6 +234,7 @@ public class EELimited {
     	LavaOrb = new ItemLavaOrb();
     	WaterOrb = new ItemWaterOrb();
     	Randomizer = new ItemMobRandomizer();
+    	BHR = new ItemBlackHoleRing();
     	/*
     	 *	register objects
     	 */
@@ -271,6 +279,7 @@ public class EELimited {
         	addRecipe(gs(AlchBag,1,i),"HHH","WCW","WWW",'H',getCov(HIGH),'C',AlchChest,'W',gs(Blocks.wool,1,i));
         }
         addORecipe(gs(Klein),"CCC","CDC","CCC",'C',mobiusFuel,'D',"gemDiamond");
+        addRecipe(gs(BHR),"SSS","DID","SSS",'S',Items.string,'D',DM,'I',ironband);
     	addKleinUpgradeRecipe();
     	addKleinChargeRecipe();
         addRelicRecipe();
@@ -374,20 +383,6 @@ public class EELimited {
     	if(Loader.isModLoaded("gregtech"))
     	{
     		GTAddon();
-    	}
-    }
-    /*
-     * Event handler
-     */
-    @SubscribeEvent
-    public void onKeyInput(KeyInputEvent event)
-    {
-    	for(int i = 0;i < KeyRegistry.array.length;i++)
-    	{
-    		if(KeyRegistry.array[i].isPressed())
-    		{
-    			PacketHandler.sendToServer(new PacketKeyInput(i));
-    		}
     	}
     }
     /*

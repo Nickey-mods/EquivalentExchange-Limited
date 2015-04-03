@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -14,6 +15,7 @@ import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityCaveSpider;
 import net.minecraft.entity.monster.EntityCreeper;
@@ -40,8 +42,10 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.entity.player.PlayerCapabilities;
 import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.init.Items;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.FoodStats;
@@ -80,12 +84,199 @@ public class EEProxy
     @SideOnly(Side.CLIENT)
     public static EntityClientPlayerMP getPlayer()
     {
-        return FMLClientHandler.instance().getClient().thePlayer;
+        return FMLClientHandler.instance().getClientPlayerEntity();
     }
     public static World getWorld()
     {
     	return getPlayer().worldObj;
     }
+    public static boolean ContainsItemStack(List<ItemStack> list, ItemStack toSearch)
+	{
+		Iterator<ItemStack> iter = list.iterator();
+
+		while (iter.hasNext())
+		{
+			ItemStack stack = iter.next();
+
+			if (stack == null)
+			{
+				continue;
+			}
+
+			if (stack.getItem().equals(toSearch.getItem()))
+			{
+				if( !stack.getHasSubtypes() || stack.getItemDamage() == toSearch.getItemDamage())
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public static boolean containsItemStack(ItemStack[] stacks, ItemStack toSearch)
+	{
+		for (ItemStack stack : stacks)
+		{
+			if (stack == null)
+			{
+				continue;
+			}
+
+			if (stack.getItem() == toSearch.getItem())
+			{
+				if (!stack.getHasSubtypes() || stack.getItemDamage() == toSearch.getItemDamage())
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	public static boolean invContainsItem(IInventory inv, ItemStack toSearch)
+	{
+		for (int i = 0; i < inv.getSizeInventory(); i++)
+		{
+			ItemStack stack = inv.getStackInSlot(i);
+
+			if (stack != null && basicAreStacksEqual(stack, toSearch))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public static boolean invContainsItem(ItemStack inv[], ItemStack toSearch)
+	{
+		for (ItemStack stack : inv)
+		{
+			if (stack != null && basicAreStacksEqual(stack, toSearch))
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public static boolean invContainsItem(ItemStack inv[], Item toSearch)
+	{
+		for (ItemStack stack : inv)
+		{
+			if (stack != null && stack.getItem() == toSearch)
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+    public static ItemStack pushStackInInv(IInventory inv, ItemStack stack)
+	{
+		int limit;
+
+		if (inv instanceof InventoryPlayer)
+		{
+			limit = 36;
+		}
+		else
+		{
+			limit = inv.getSizeInventory();
+		}
+
+		for (int i = 0; i < limit; i++)
+		{
+			ItemStack invStack = inv.getStackInSlot(i);
+
+			if (invStack == null)
+			{
+				inv.setInventorySlotContents(i, stack);
+				return null;
+			}
+
+			if (areItemStacksEqual(stack, invStack) && invStack.stackSize < invStack.getMaxStackSize())
+			{
+				int remaining = invStack.getMaxStackSize() - invStack.stackSize;
+
+				if (remaining >= stack.stackSize)
+				{
+					invStack.stackSize += stack.stackSize;
+					inv.setInventorySlotContents(i, invStack);
+					return null;
+				}
+
+				invStack.stackSize += remaining;
+				inv.setInventorySlotContents(i, invStack);
+				stack.stackSize -= remaining;
+			}
+		}
+
+		return stack.copy();
+	}
+
+	/**
+	 *	Returns an itemstack if the stack passed could not entirely fit in the inventory, otherwise returns null.
+	 */
+	public static ItemStack pushStackInInv(ItemStack[] inv, ItemStack stack)
+	{
+		for (int i = 0; i < inv.length; i++)
+		{
+			ItemStack invStack = inv[i];
+
+			if (invStack == null)
+			{
+				inv[i] = stack;
+				return null;
+			}
+
+			if (areItemStacksEqual(stack, invStack) && invStack.stackSize < invStack.getMaxStackSize())
+			{
+				int remaining = invStack.getMaxStackSize() - invStack.stackSize;
+
+				if (remaining >= stack.stackSize)
+				{
+					invStack.stackSize += stack.stackSize;
+					inv[i] = invStack;
+					return null;
+				}
+
+				invStack.stackSize += remaining;
+				inv[i] = invStack;
+				stack.stackSize -= remaining;
+			}
+		}
+
+		return stack.copy();
+	}
+
+	public static void spawnEntityItem(World world, ItemStack stack, int x, int y, int z)
+	{
+		float f = world.rand.nextFloat() * 0.8F + 0.1F;
+		float f1 = world.rand.nextFloat() * 0.8F + 0.1F;
+		EntityItem entityitem;
+
+		for (float f2 = world.rand.nextFloat() * 0.8F + 0.1F; stack.stackSize > 0; world.spawnEntityInWorld(entityitem))
+		{
+			int j1 = world.rand.nextInt(21) + 10;
+
+			if (j1 > stack.stackSize)
+				j1 = stack.stackSize;
+
+			stack.stackSize -= j1;
+			entityitem = new EntityItem(world, (double)((float) x + f), (double)((float) y + f1), (double)((float) z + f2), new ItemStack(stack.getItem(), j1, stack.getItemDamage()));
+			float f3 = 0.05F;
+			entityitem.motionX = (double)((float) world.rand.nextGaussian() * f3);
+			entityitem.motionY = (double)((float) world.rand.nextGaussian() * f3 + 0.2F);
+			entityitem.motionZ = (double)((float) world.rand.nextGaussian() * f3);
+
+			if (stack.hasTagCompound())
+			{
+				entityitem.getEntityItem().setTagCompound((NBTTagCompound)stack.getTagCompound().copy());
+			}
+		}
+
+	}
     public static void chatToPlayer(EntityPlayer p,String message)
     {
     	if(p.worldObj.isRemote)
@@ -187,6 +378,47 @@ public class EEProxy
     	//Do something
     	return false;
     }
+    public static boolean basicAreStacksEqual(ItemStack stack1, ItemStack stack2)
+	{
+		return (stack1.getItem() == stack2.getItem()) && (stack1.getItemDamage() == stack2.getItemDamage());
+	}
+    public static ItemStack getStackFromInv(IInventory inv, ItemStack stack)
+	{
+		for (int i = 0; i < inv.getSizeInventory(); i++)
+		{
+			ItemStack s = inv.getStackInSlot(i);
+
+			if (s == null)
+			{
+				continue;
+			}
+
+			if (basicAreStacksEqual(stack, s))
+			{
+				return s;
+			}
+		}
+
+		return null;
+	}
+
+	public static ItemStack getStackFromInv(ItemStack[] inv, ItemStack stack)
+	{
+		for (ItemStack s : inv)
+		{
+			if (s == null)
+			{
+				continue;
+			}
+
+			if (basicAreStacksEqual(stack, s))
+			{
+				return s;
+			}
+		}
+
+		return null;
+	}
     public static void setEntityImmuneToFire(Entity target,boolean flag)
     {
     	Class clas = Entity.class;
@@ -406,6 +638,53 @@ public class EEProxy
 		}
 
 		return null;
+	}
+	public static boolean areItemStacksEqual(ItemStack stack1, ItemStack stack2)
+	{
+		return ItemStack.areItemStacksEqual(getNormalizedStack(stack1), getNormalizedStack(stack2));
+	}
+	private static ItemStack getNormalizedStack(ItemStack stack1)
+	{
+		ItemStack stack = stack1.copy();
+		stack.stackSize = 1;
+		return stack;
+	}
+	public static boolean hasSpace(IInventory inv, ItemStack stack)
+	{
+		for (int i = 0; i < inv.getSizeInventory(); i++)
+		{
+			ItemStack invStack = inv.getStackInSlot(i);
+
+			if (invStack == null)
+			{
+				return true;
+			}
+
+			if (areItemStacksEqual(stack, invStack) && invStack.stackSize < invStack.getMaxStackSize())
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public static boolean hasSpace(ItemStack[] inv, ItemStack stack)
+	{
+		for (ItemStack invStack : inv)
+		{
+			if (invStack == null)
+			{
+				return true;
+			}
+
+			if (areItemStacksEqual(stack, invStack) && invStack.stackSize < invStack.getMaxStackSize())
+			{
+				return true;
+			}
+		}
+
+		return false;
 	}
 	private static void loadEntityLists()
 	{

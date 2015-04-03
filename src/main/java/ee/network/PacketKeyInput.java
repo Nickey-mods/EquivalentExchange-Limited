@@ -1,12 +1,14 @@
 package ee.network;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
 import cpw.mods.fml.common.network.simpleimpl.MessageContext;
+import ee.features.EELimited;
+import ee.features.EEProxy;
 import ee.features.items.IChargeable;
 import ee.features.items.IExtraFunction;
 import ee.features.items.IProjectileShooter;
@@ -32,11 +34,19 @@ public class PacketKeyInput implements IMessage, IMessageHandler<PacketKeyInput,
 
 	@Override
 	public IMessage onMessage(PacketKeyInput message, MessageContext ctx) {
-		EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-		ItemStack is = player.getCurrentEquippedItem();
+		EntityPlayer player = ctx.getServerHandler().playerEntity;
+		ItemStack is = player.getHeldItem();
+		if(is == null)
+		{
+			return null;
+		}
 		World w = player.worldObj;
 		if(message.code == 0)
 		{
+			if(EELimited.Debug && is.getItemDamage() == 0)
+			{
+				EEProxy.chatToPlayer(player, "Activated!");
+			}
 			if(is != null && is.getItem() instanceof ItemEE)
 			{
 				((ItemEE)is.getItem()).onActivated(is);

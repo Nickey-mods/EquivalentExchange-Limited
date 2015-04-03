@@ -32,6 +32,15 @@ item.PhilTool_wrench.name=賢者の石(レンチ)
 item.PhilTool_saw.name=賢者の石(ノコ)
 item.Repair.name=補修の御守
 item.AlchBag.name=錬金バッグ
+item.BHRing.name=吸引の指輪
+
+#Klein Star names
+item.Klein_0.name=クラインの星(Ⅰ)
+item.Klein_1.name=クラインの星(Ⅱ)
+item.Klein_2.name=クラインの星(Ⅲ)
+item.Klein_3.name=クラインの星(Ⅳ)
+item.Klein_4.name=クラインの星(Ⅴ)
+item.Klein_5.name=クラインの星(Ⅵ)
 
 #Block names
 tile.DMBlock.name=暗黒物質のブロック

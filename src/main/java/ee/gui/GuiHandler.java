@@ -7,6 +7,7 @@ import net.minecraft.world.World;
 import cpw.mods.fml.common.network.IGuiHandler;
 import ee.features.EELimited;
 import ee.features.items.ItemAlchemyBag;
+import ee.features.tile.TileEntityAlchChest;
 
 public class GuiHandler implements IGuiHandler {
 

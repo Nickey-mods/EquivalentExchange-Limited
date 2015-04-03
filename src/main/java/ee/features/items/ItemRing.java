@@ -13,7 +13,7 @@ import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public abstract class ItemRing extends ItemEE
+public abstract class ItemRing extends ItemEEFunctional
 {
     IIcon On, Off;
     String texture = "";

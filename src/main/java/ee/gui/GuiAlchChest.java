@@ -7,6 +7,8 @@ import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
 
+import ee.features.tile.TileEntityAlchChest;
+
 public class GuiAlchChest extends GuiContainer {
 
 	private static final ResourceLocation texture = new ResourceLocation("ee","textures/gui/alchchest.png");

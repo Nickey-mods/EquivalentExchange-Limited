@@ -8,4 +8,6 @@ public class CommonProxy {
 		return null;
 	}
 	public void registerRenderers() {}
+	public void registerKies(){}
+	public void registerClientOnlyEvents(){}
 }
