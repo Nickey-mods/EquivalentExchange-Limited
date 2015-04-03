@@ -30,7 +30,7 @@ item.PhilTool_screw.name=賢者の石(ドライバー)
 item.PhilTool_shammer.name=賢者の石(ソフトハンマー)
 item.PhilTool_wrench.name=賢者の石(レンチ)
 item.PhilTool_saw.name=賢者の石(ノコ)
-item.Repair.name=補修の御守
+item.repair.name=補修の御守
 item.AlchBag.name=錬金バッグ
 item.BHRing.name=吸引の指輪
 
