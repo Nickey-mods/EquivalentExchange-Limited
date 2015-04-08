@@ -69,7 +69,7 @@ public class EntityWaterProjectile extends EntityThrowable
 
 			if (this.posY > 128)
 			{
-				if(EEProxy.UseResource(thrower,4))
+				if(EEProxy.UseResource(thrower,4,true))
 				{
 					WorldInfo worldInfo = this.worldObj.getWorldInfo();
 					worldInfo.setRaining(true);

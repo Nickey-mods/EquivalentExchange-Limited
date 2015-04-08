@@ -31,6 +31,10 @@ public class EEHandler {
 		EntityLivingBase l = e.entityLiving;
 		if(l instanceof EntityPlayer)
 		{
+			if(l.worldObj.isRemote)
+			{
+				Timer1s.Tick();
+			}
 			EntityPlayer p = (EntityPlayer)l;
 			PlayerCapabilities pc = p.capabilities;
 			/*{
@@ -56,10 +60,18 @@ public class EEHandler {
 				{
 					allowFly = true;
 					flag = true;
+					if(Timer1s.isTime()&&!EEProxy.UseResource(p,1,true))
+					{
+						is.setItemDamage(0);
+					}
 				}
 				if(is.getItem() == EELimited.DD && is.getItemDamage() > 0)
 				{
 					disableDamage = true;
+					if(Timer1s.isTime()&&!EEProxy.UseResource(p,1,true))
+					{
+						is.setItemDamage(0);
+					}
 				}
 			}
 			if(flag && !allowFly)

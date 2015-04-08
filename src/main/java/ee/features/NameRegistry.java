@@ -30,4 +30,5 @@ public interface NameRegistry
     String WaterOrb = "water_orb";
     String Randomizer = "randomizer";
     String BHR = "BHRing";
+    String ArchAngel = "ArchAngel";
 }

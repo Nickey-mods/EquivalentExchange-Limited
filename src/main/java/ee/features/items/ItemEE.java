@@ -3,6 +3,7 @@ package ee.features.items;
 import net.minecraft.block.Block;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
@@ -10,6 +11,7 @@ import com.google.common.collect.Multimap;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import ee.features.EELimited;
+import ee.features.EEProxy;
 
 public class ItemEE extends Item {
 	int toolDamage = 0;
@@ -41,11 +43,20 @@ public class ItemEE extends Item {
         return name.toLowerCase().contains("wood") || name.toLowerCase().contains("log");
     }
 
-    public void onActivated(ItemStack is)
+    public void onActivated(EntityPlayer player,ItemStack is)
     {
-        if (is.getItem() instanceof ItemRing||(!is.getHasSubtypes() && is.getMaxDamage() == 200))
+    	boolean flag = false;
+        if (!is.getHasSubtypes() && is.getMaxDamage() == 200)
         {
-            is.setItemDamage(1 - is.getItemDamage());
+            flag = true;
+        }
+        else if(useResource() && (is.getItemDamage() == 1||EEProxy.UseResource(player,1,false)))
+        {
+        	flag = true;
+        }
+        if(flag)
+        {
+        	is.setItemDamage(1 - is.getItemDamage());
         }
     }
     @SuppressWarnings("unchecked")
@@ -59,5 +70,9 @@ public class ItemEE extends Item {
         Multimap multimap = super.getItemAttributeModifiers();
         multimap.put(SharedMonsterAttributes.attackDamage.getAttributeUnlocalizedName(), new AttributeModifier(field_111210_e, "Weapon modifier", (double)this.toolDamage, 0));
         return multimap;
+    }
+    protected boolean useResource()
+    {
+    	return false;
     }
 }

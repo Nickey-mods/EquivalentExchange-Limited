@@ -49,7 +49,7 @@ public class PacketKeyInput implements IMessage, IMessageHandler<PacketKeyInput,
 			}
 			if(is != null && is.getItem() instanceof ItemEE)
 			{
-				((ItemEE)is.getItem()).onActivated(is);
+				((ItemEE)is.getItem()).onActivated(player,is);
 			}
 		}
 		if(message.code == 1)

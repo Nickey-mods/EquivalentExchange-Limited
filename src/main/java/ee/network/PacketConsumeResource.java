@@ -32,7 +32,7 @@ public class PacketConsumeResource implements IMessage,IMessageHandler<PacketCon
 	public IMessage onMessage(PacketConsumeResource message, MessageContext ctx)
 	{
 		EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-		EEProxy.UseResource(player, message.amount);
+		EEProxy.UseResource(player, message.amount,true);
 		return null;
 	}
 }

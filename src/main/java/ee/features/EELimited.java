@@ -64,6 +64,7 @@ import ee.features.entity.EntityLavaProjectile;
 import ee.features.entity.EntityMobRandomizer;
 import ee.features.entity.EntityWaterProjectile;
 import ee.features.items.ItemAlchemyBag;
+import ee.features.items.ItemArchangelSmite;
 import ee.features.items.ItemBlackHoleRing;
 import ee.features.items.ItemCovalenceDust;
 import ee.features.items.ItemDMAxe;
@@ -177,6 +178,7 @@ public class EELimited {
     public static Item AlchBag;
     public static Item Klein;
     public static Item BHR;
+    public static Item ArchAngel;
     /**
      * Projectiles
      */
@@ -235,6 +237,7 @@ public class EELimited {
     	WaterOrb = new ItemWaterOrb();
     	Randomizer = new ItemMobRandomizer();
     	BHR = new ItemBlackHoleRing();
+    	ArchAngel = new ItemArchangelSmite();
     	/*
     	 *	register objects
     	 */
@@ -280,6 +283,7 @@ public class EELimited {
         }
         addORecipe(gs(Klein),"CCC","CDC","CCC",'C',mobiusFuel,'D',"gemDiamond");
         addRecipe(gs(BHR),"SSS","DID","SSS",'S',Items.string,'D',DM,'I',ironband);
+        addRecipe(gs(ArchAngel),"BFB","DID","BFB",'B',Items.bow,'F',Items.feather,'D',DM,'I',ironband);
     	addKleinUpgradeRecipe();
     	addKleinChargeRecipe();
         addRelicRecipe();

@@ -66,7 +66,7 @@ public class EntityLavaProjectile extends EntityThrowable
 
 			if (this.posY > 128)
 			{
-				if(EEProxy.UseResource((EntityPlayer)thrower,16))
+				if(EEProxy.UseResource((EntityPlayer)thrower,16,true))
 				{
 					WorldInfo worldInfo = this.worldObj.getWorldInfo();
 					worldInfo.setRaining(false);
@@ -94,7 +94,7 @@ public class EntityLavaProjectile extends EntityThrowable
 		{
 			ForgeDirection dir = ForgeDirection.getOrientation(mop.sideHit);
 
-			if(!EEProxy.UseResource((EntityPlayer)thrower, 128))
+			if(!EEProxy.UseResource((EntityPlayer)thrower, 128,true))
 			{
 				return;
 			}
@@ -104,7 +104,7 @@ public class EntityLavaProjectile extends EntityThrowable
 		else if (mop.typeOfHit == MovingObjectType.ENTITY)
 		{
 			Entity ent = mop.entityHit;
-			if(!EEProxy.UseResource((EntityPlayer)thrower, 8))
+			if(!EEProxy.UseResource((EntityPlayer)thrower, 8,true))
 			{
 				ent.setFire(1);
 			}
