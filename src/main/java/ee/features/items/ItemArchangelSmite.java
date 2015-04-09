@@ -25,6 +25,7 @@ public class ItemArchangelSmite extends ItemEEFunctional {
 			boolean flag = false;
 			if(player.inventory.hasItem(Items.arrow))
 			{
+				arrow.setPickable(true);
 				player.inventory.consumeInventoryItem(Items.arrow);
 				flag = true;
 			}
@@ -44,6 +45,8 @@ public class ItemArchangelSmite extends ItemEEFunctional {
 			}
 			else if(EEProxy.UseResource(player,14,true))
 			{
+				EntityHomingArrow arrow2 = new EntityHomingArrow(world, player, 2.0F);
+				world.spawnEntityInWorld(arrow2);
 				flag = true;
 			}
 			if(flag)

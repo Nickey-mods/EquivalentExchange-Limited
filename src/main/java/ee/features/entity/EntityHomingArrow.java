@@ -1,5 +1,4 @@
 package ee.features.entity;
-import java.lang.reflect.Field;
 import java.util.List;
 
 import net.minecraft.entity.EntityLivingBase;
@@ -12,7 +11,8 @@ public class EntityHomingArrow extends EntityArrow
 {
 	EntityLivingBase target;
 	World world;
-
+	private boolean inGround;
+	public boolean flag;
 	private void init(World world)
 	{
 		this.world = world;
@@ -30,16 +30,23 @@ public class EntityHomingArrow extends EntityArrow
 		init(world);
 	}
 
+	public void setPickable(boolean flag)
+	{
+		this.flag = flag;
+	}
 	@Override
 	public void onUpdate()
 	{
 		super.onUpdate();
 
 		AxisAlignedBB box = this.boundingBox;
-
+		if(!flag&&isInGround())
+		{
+			setDead();
+		}
 		if (target == null && !isInGround())
 		{
-			AxisAlignedBB bBox = box.expand(12, 12, 12);
+			AxisAlignedBB bBox = box.expand(9, 2, 9);
 			List<EntityLivingBase> list = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, bBox);
 
 			double distance = 100000;
@@ -107,19 +114,6 @@ public class EntityHomingArrow extends EntityArrow
 
 	private boolean isInGround()
 	{
-		boolean result = false;
-		Field field = EntityArrow.class.getDeclaredFields()[5];
-		field.setAccessible(true);
-
-		try
-		{
-			result = field.getBoolean(this);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-
-		return result;
+		return inGround;
 	}
 }

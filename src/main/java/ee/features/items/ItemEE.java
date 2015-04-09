@@ -54,6 +54,7 @@ public class ItemEE extends Item {
         {
         	flag = true;
         }
+        else if(!useResource() && is.getItem() instanceof ItemRing)
         if(flag)
         {
         	is.setItemDamage(1 - is.getItemDamage());
