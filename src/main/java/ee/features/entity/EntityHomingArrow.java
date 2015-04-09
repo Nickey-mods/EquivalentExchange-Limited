@@ -39,7 +39,7 @@ public class EntityHomingArrow extends EntityArrow
 
 		if (target == null && !isInGround())
 		{
-			AxisAlignedBB bBox = box.expand(8, 8, 8);
+			AxisAlignedBB bBox = box.expand(12, 12, 12);
 			List<EntityLivingBase> list = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, bBox);
 
 			double distance = 100000;
