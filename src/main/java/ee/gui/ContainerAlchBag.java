@@ -1,5 +1,6 @@
 package ee.gui;
 
+import invtweaks.api.container.ChestContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -9,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import ee.features.EELimited;
 import ee.features.items.ItemAlchemyBag;
 
+@ChestContainer(isLargeChest = true,rowSize = 13)
 public class ContainerAlchBag extends Container
 {
 	IInventory BagInv;
