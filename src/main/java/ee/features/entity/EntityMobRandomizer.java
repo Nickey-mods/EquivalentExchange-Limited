@@ -72,7 +72,7 @@ public class EntityMobRandomizer extends EntityThrowable
 		}
 		Entity randomized = EEProxy.getRandomEntity(this.worldObj, ent);
 
-		if ((ent instanceof EntityLiving || ent instanceof EntityFireball)&& randomized != null && EEProxy.UseResource(shooter, 16,true))
+		if ((ent instanceof EntityLiving || ent instanceof EntityFireball)&& randomized != null && EEProxy.useResource(shooter, 16,true))
 		{
 			this.setDead();
 			ent.setDead();

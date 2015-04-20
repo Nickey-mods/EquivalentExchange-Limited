@@ -1,8 +1,5 @@
 package ee.features.recipes;
 
-import ee.features.EELimited;
-import gregtech.api.items.GT_MetaGenerated_Tool;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -16,8 +13,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import tconstruct.library.tools.AbilityHelper;
-import tconstruct.library.tools.ToolCore;
 
 public class FixRecipe extends ShapelessRecipes
 {
@@ -65,7 +60,7 @@ public class FixRecipe extends ShapelessRecipes
                             return false;
                         }
 
-                        if (var6.getItem() == var9.getItem() && ((var9.getItemDamage() == 32767 && (var6.getItemDamage() != 0 || EELimited.loadTinCo ? true:false)) || var6.getItemDamage() == var9.getItemDamage()))
+                        if (var6.getItem() == var9.getItem() && ((var9.getItemDamage() == 32767 && (var6.getItemDamage() != 0 )) || var6.getItemDamage() == var9.getItemDamage()))
                         {
                         	boolean flag = false;
                             if (var9.getItemDamage() == 32767)
@@ -85,18 +80,6 @@ public class FixRecipe extends ShapelessRecipes
                             	else
                             	{
                             		tag = null;
-                            	}
-                            	if(EELimited.loadGT&&var6.getItem() instanceof GT_MetaGenerated_Tool)
-                            	{
-                            		flag = true;
-                            		GT_MetaGenerated_Tool tool = (GT_MetaGenerated_Tool)var6.getItem();
-                            		GTItem = var6.copy();
-                            		GTItem.setItemDamage(var6.getItemDamage());
-                            		GT_MetaGenerated_Tool.setToolDamage(GTItem, 0);
-                            	}
-                            	else
-                            	{
-                            		GTItem = null;
                             	}
                             }
                             var7 = true;
@@ -147,21 +130,16 @@ public class FixRecipe extends ShapelessRecipes
         	}
         	is.setTagCompound(tag);
         }
-        if(EELimited.loadTinCo&&is.getItem() instanceof ToolCore)
-        {
-        	AbilityHelper.repairTool(is,tag);
-        	return is;
-        }
-        if (!is.getHasSubtypes()&&GTItem == null)
+        if (!is.getHasSubtypes())
         {
             is.setItemDamage(0);
         }
-        if(GTItem != null)
+        else if(is.getItem().getContainerItem() != null && is.getItem() == is.getItem().getContainerItem())
         {
         	for(int i = 0;i < 9;i++)
         	{
         		ItemStack is2 = inventory.getStackInSlot(i);
-        		if(is2!=null&&is2.getItem() instanceof GT_MetaGenerated_Tool)
+        		if(is2 != null&&is2.getItem() == is.getItem())
         		{
         			inventory.setInventorySlotContents(i, null);
         		}

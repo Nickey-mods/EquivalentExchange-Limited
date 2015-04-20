@@ -1,16 +1,16 @@
 package ee.features.items;
 
-import ee.features.EELimited;
-import ee.features.NameRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import ee.features.EELimited;
+import ee.features.NameRegistry;
 
 
-public class ItemDMAxe extends ItemEEFunctional
+public class ItemDMAxe extends ItemEETool
 {
     public ItemDMAxe()
     {
@@ -59,7 +59,7 @@ public class ItemDMAxe extends ItemEEFunctional
     public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
     {
         //EEProxy.mc.thePlayer.sendChatMessage(EEProxy.getSide(par2EntityPlayer, par4, par5, par6).name());;
-        if (par1ItemStack.getItemDamage() > 0 && isWood(par3World.getBlock(par4, par5, par6)))
+        if (getChargeLevel(par1ItemStack) > 0 && isWood(par3World.getBlock(par4, par5, par6)))
         {
             if (EELimited.cutDown)
             {

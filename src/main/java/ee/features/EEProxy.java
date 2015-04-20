@@ -38,7 +38,6 @@ import net.minecraft.entity.passive.EntitySheep;
 import net.minecraft.entity.passive.EntitySquid;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.entity.player.PlayerCapabilities;
 import net.minecraft.entity.projectile.EntityFireball;
@@ -60,8 +59,6 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import ee.features.items.ItemKleinStar;
-import ee.network.PacketHandler;
-import ee.network.PacketSetFlying;
 
 public class EEProxy
 {
@@ -84,9 +81,8 @@ public class EEProxy
         mc = var0;
         ee = var1;
     }
-    public static void setPlayerFlight(EntityPlayerMP player, boolean state)
+    public static void setPlayerFlight(EntityPlayer player, boolean state)
 	{
-		PacketHandler.sendTo(new PacketSetFlying(state), player);
 		player.capabilities.allowFlying = state;
 		if (!state)
 		{
@@ -313,12 +309,13 @@ public class EEProxy
     	}
     	return 0;
     }
-    public static void setEMC(ItemStack is,int EMC)
+    public static void setEMC(EntityPlayer p,ItemStack is,int EMC)
     {
     	if(is.hasTagCompound())
     	{
     		is.getTagCompound().setInteger("EMC",EMC);
     	}
+    	savePlayerInventory(p);
     }
     public static int getItemCount(InventoryPlayer inv,Item item)
     {
@@ -355,7 +352,7 @@ public class EEProxy
     	inv.markDirty();
     	inv.player.inventoryContainer.detectAndSendChanges();
     }
-    public static boolean UseResource(EntityPlayer player,int amount,boolean doUse)
+    public static boolean useResource(EntityPlayer player,int amount,boolean doUse)
     {
     	if(EELimited.disableResource||player == null)
     	{
@@ -377,6 +374,7 @@ public class EEProxy
     			if(doUse)
     			{
     				decrItem(inv,i,amount / in);
+    				savePlayerInventory(player);
     			}
     			return true;
     		}
@@ -391,15 +389,14 @@ public class EEProxy
     				continue;
     			}
     			int stored = getEMC(is);
-    			ItemStack is2 = is.copy();
     			if(stored >= amount)
     			{
     				if(doUse)
         			{
-    					setEMC(is2,stored - amount);
+    					setEMC(player,is,stored - amount);
         			}
-    				inv.setInventorySlotContents(i, is2);
-    				inv.markDirty();
+    				inv.setInventorySlotContents(i, is);
+    				savePlayerInventory(player);
     				return true;
     			}
     			else
@@ -408,8 +405,13 @@ public class EEProxy
     			}
     		}
     	}
-    	//Do something
+    	savePlayerInventory(player);
     	return false;
+    }
+    public static void savePlayerInventory(EntityPlayer p)
+    {
+    	p.inventory.markDirty();
+    	p.inventoryContainer.detectAndSendChanges();
     }
     public static boolean basicAreStacksEqual(ItemStack stack1, ItemStack stack2)
 	{

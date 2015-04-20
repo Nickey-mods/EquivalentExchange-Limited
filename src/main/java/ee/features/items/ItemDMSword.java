@@ -5,7 +5,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.DamageSource;
 import ee.features.NameRegistry;
 
-public class ItemDMSword extends ItemEE
+public class ItemDMSword extends ItemEETool
 {
     public ItemDMSword()
     {
@@ -14,7 +14,7 @@ public class ItemDMSword extends ItemEE
 
     public boolean hitEntity(ItemStack par1ItemStack, EntityLivingBase par2EntityLivingBase, EntityLivingBase par3EntityLivingBase)
     {
-        if (par1ItemStack.getItemDamage() == 1)
+        if (getChargeLevel(par1ItemStack) > 0)
         {
             par2EntityLivingBase.attackEntityFrom(DamageSource.causeMobDamage(par3EntityLivingBase), toolDamage * 2);
         }

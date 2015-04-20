@@ -175,10 +175,12 @@ public class TileEntityAlchChest extends TileDirection implements IInventory
 	public void updateEntity()
 	{
 		super.updateEntity();
+
 		if (++ticksSinceSync % 20 * 4 == 0)
 		{
-			worldObj.addBlockEvent(xCoord, yCoord, zCoord,EELimited.AlchChest, 1, numPlayersUsing);
+			worldObj.addBlockEvent(xCoord, yCoord, zCoord, EELimited.AlchChest, 1, numPlayersUsing);
 		}
+
 		prevLidAngle = lidAngle;
 		float angleIncrement = 0.1F;
 		double adjustedXCoord, adjustedZCoord;

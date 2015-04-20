@@ -167,18 +167,18 @@ public class ItemAlchemyBag extends ItemEEFunctional {
 		}
 		return data;
 	}
-	public BagData getData(ItemStack var1, World var2)
+	public BagData getData(ItemStack is, World w)
 	{
 		String itemName = "AlchBag";
-		int itemDamage = MathHelper.clamp_int(var1.getItemDamage(),0,15);
+		int itemDamage = MathHelper.clamp_int(is.getItemDamage(),0,15);
 		String var3 = String.format("%s_%s", itemName, itemDamage);
-		BagData var4 = (BagData)var2.loadItemData(BagData.class, var3);
+		BagData var4 = (BagData)w.loadItemData(BagData.class, var3);
 
 		if (var4 == null)
 		{
 			var4 = new BagData(var3);
 			var4.markDirty();
-			var2.setItemData(var3, var4);
+			w.setItemData(var3, var4);
 		}
 
 		return var4;

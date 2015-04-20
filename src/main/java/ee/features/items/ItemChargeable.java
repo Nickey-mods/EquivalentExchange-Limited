@@ -14,6 +14,12 @@ public class ItemChargeable extends ItemEE implements IChargeable {
 		numCharges = numCharge;
 		this.setMaxStackSize(1).setContainerItem(this);
 	}
+	public ItemChargeable(String name,int numCharge,int damage)
+	{
+		super(name,damage);
+		numCharges = numCharge;
+		this.setMaxStackSize(1).setContainerItem(this);
+	}
 	@Override
     public boolean showDurabilityBar(ItemStack stack)
     {
@@ -53,7 +59,8 @@ public class ItemChargeable extends ItemEE implements IChargeable {
 	}
 
 	@Override
-	public int getChargeLevel(ItemStack is) {
+	public int getChargeLevel(ItemStack is)
+	{
 		if(is.hasTagCompound())
 		{
 			return is.getTagCompound().getInteger("Charge");

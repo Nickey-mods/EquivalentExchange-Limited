@@ -12,7 +12,7 @@ import ee.features.EEProxy;
 import ee.features.items.IChargeable;
 import ee.features.items.IExtraFunction;
 import ee.features.items.IProjectileShooter;
-import ee.features.items.ItemEE;
+import ee.features.items.ItemRing;
 
 public class PacketKeyInput implements IMessage, IMessageHandler<PacketKeyInput,IMessage> {
 
@@ -47,9 +47,9 @@ public class PacketKeyInput implements IMessage, IMessageHandler<PacketKeyInput,
 			{
 				EEProxy.chatToPlayer(player, "Activated!");
 			}
-			if(is != null && is.getItem() instanceof ItemEE)
+			if(is != null && is.getItem() instanceof ItemRing)
 			{
-				((ItemEE)is.getItem()).onActivated(player,is);
+				((ItemRing)is.getItem()).onActivated(player,is);
 			}
 		}
 		if(message.code == 1)

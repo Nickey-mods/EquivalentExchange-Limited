@@ -43,7 +43,7 @@ public class ItemArchangelSmite extends ItemEEFunctional {
 				world.spawnEntityInWorld(arrow2);
 				flag = true;
 			}
-			else if(EEProxy.UseResource(player,14,true))
+			else if(EEProxy.useResource(player,14,true))
 			{
 				EntityHomingArrow arrow2 = new EntityHomingArrow(world, player, 2.0F);
 				world.spawnEntityInWorld(arrow2);

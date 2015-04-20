@@ -56,7 +56,7 @@ public class ItemRepairCharm extends ItemEEFunctional
 				continue;
 			}
 
-			if (!invStack.getHasSubtypes() && invStack.getMaxDamage() != 0 && invStack.getItemDamage() > 0 && EEProxy.UseResource(player,1,true))
+			if (!invStack.getHasSubtypes() && invStack.getMaxDamage() != 0 && invStack.getItemDamage() > 0 && EEProxy.useResource(player,1,true))
 			{
 				invStack.setItemDamage(invStack.getItemDamage() - 1);
 				inv.markDirty();

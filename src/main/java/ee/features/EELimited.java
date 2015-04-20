@@ -6,7 +6,6 @@ import ic2.api.item.IC2Items;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +41,6 @@ import net.minecraftforge.oredict.ShapelessOreRecipe;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import tconstruct.library.tools.ToolCore;
 import cpw.mods.fml.client.FMLClientHandler;
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;
@@ -79,8 +77,6 @@ import ee.features.items.ItemEvertide;
 import ee.features.items.ItemKleinStar;
 import ee.features.items.ItemPhilToolBase;
 import ee.features.items.ItemPhilToolFMP;
-import ee.features.items.ItemPhilToolGT;
-import ee.features.items.ItemPhilToolGTFMP;
 import ee.features.items.ItemPhilosophersStone;
 import ee.features.items.ItemRepairCharm;
 import ee.features.items.ItemSwiftwolfsRing;
@@ -94,10 +90,6 @@ import ee.features.recipes.KleinUpgradeRecipe;
 import ee.features.tile.TileEntityAlchChest;
 import ee.gui.GuiHandler;
 import ee.network.PacketHandler;
-import gregtech.api.GregTech_API;
-import gregtech.api.items.GT_MetaGenerated_Tool;
-import gregtech.api.objects.GT_ItemStack;
-import gregtech.api.util.GT_Utility;
 
 @Mod(modid = "EELimited",name = "EELimited",version = "RC1")
 public class EELimited {
@@ -194,7 +186,7 @@ public class EELimited {
     /**
      * Addon
      */
-    public static boolean loadGT,loadFMP,loadTinCo;
+    public static boolean loadFMP;
     @EventHandler
     public void init(FMLInitializationEvent e)
     {
@@ -355,18 +347,8 @@ public class EELimited {
     @EventHandler
     public void postInit(FMLPostInitializationEvent e) throws Exception
     {
-    	loadGT = Loader.isModLoaded("gregtech");
     	loadFMP = Loader.isModLoaded("ForgeMultipart");
-    	loadTinCo = Loader.isModLoaded("TConstruct");
-    	if(loadGT&&!loadFMP)
-    	{
-    		PhilTool = new ItemPhilToolGT();
-    	}
-    	else if(loadGT && loadFMP)
-    	{
-    		PhilTool = new ItemPhilToolGTFMP();
-    	}
-    	else if(!loadGT && loadFMP)
+    	if(loadFMP)
     	{
     		PhilTool = new ItemPhilToolFMP();
     	}
@@ -384,10 +366,6 @@ public class EELimited {
     	{
     		PRAddon();
     	}
-    	if(Loader.isModLoaded("gregtech"))
-    	{
-    		GTAddon();
-    	}
     }
     /*
      * Repair Check
@@ -400,20 +378,6 @@ public class EELimited {
 			 * For Vannila Items
 			 */
 			if(item instanceof ItemTool||item instanceof ItemSword||item instanceof ItemShears||item instanceof ItemBow||item instanceof ItemHoe||item instanceof ItemFlintAndSteel)
-			{
-				return true;
-			}
-		}
-		if(loadGT&&loadTinCo)
-		{
-			if(item instanceof ToolCore||item instanceof GT_MetaGenerated_Tool)
-			{
-				return true;
-			}
-		}
-		if(loadTinCo)
-		{
-			if(item instanceof ToolCore)
 			{
 				return true;
 			}
@@ -582,19 +546,6 @@ public class EELimited {
     		addExchange(gs(GlowWafer),gs(Silicon),gs(Items.glowstone_dust),gs(Items.glowstone_dust),gs(Items.glowstone_dust),gs(Items.glowstone_dust));
     	}
     	catch(Exception e){}
-    }
-    public void registerTool(ItemStack is,Collection<GT_ItemStack>aToolList)
-    {
-    	aToolList.add(new GT_ItemStack(GT_Utility.copyAmount(1,is)));
-    	GregTech_API.sToolList.add(new GT_ItemStack(GT_Utility.copyAmount(1,is)));
-    }
-    public void GTAddon()
-    {
-    	 registerTool(gs(PhilTool,1,1),GregTech_API.sCrowbarList);
-    	 registerTool(gs(PhilTool,1,2),GregTech_API.sHardHammerList);
-    	 registerTool(gs(PhilTool,1,3),GregTech_API.sScrewdriverList);
-    	 registerTool(gs(PhilTool,1,4),GregTech_API.sSoftHammerList);
-    	 registerTool(gs(PhilTool,1,5),GregTech_API.sWrenchList);
     }
     /*
      * Recipe Remove

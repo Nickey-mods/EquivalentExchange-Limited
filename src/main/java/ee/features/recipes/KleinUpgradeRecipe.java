@@ -9,7 +9,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.ShapelessRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
-import ee.features.EELimited;
 import ee.features.items.ItemKleinStar;
 
 public class KleinUpgradeRecipe extends ShapelessRecipes {
@@ -49,7 +48,7 @@ public class KleinUpgradeRecipe extends ShapelessRecipes {
                             return false;
                         }
 
-                        if (var6.getItem() == var9.getItem() && ((var9.getItemDamage() == 32767 && (var6.getItemDamage() != 0 || EELimited.loadTinCo ? true:false)) || var6.getItemDamage() == var9.getItemDamage()))
+                        if (var6.getItem() == var9.getItem() && ((var9.getItemDamage() == 32767 && (var6.getItemDamage() != 0 )) || var6.getItemDamage() == var9.getItemDamage()))
                         {
                         	boolean flag = false;
                         	if(var6.getItem() instanceof ItemKleinStar)
